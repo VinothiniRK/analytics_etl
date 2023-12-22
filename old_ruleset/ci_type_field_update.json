@@ -1,0 +1,8 @@
+[
+  {
+    "$if": "data.payload.model_properties.field_type in ['default_health']",
+    "else": {
+        "$eval": "transform('ci_type_field', {'target_table' : 'cmdb_custom_field'})"
+    }
+  }
+]

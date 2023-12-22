@@ -1,0 +1,11 @@
+[
+    {
+        "$eval": "transform('cmdb_config_item', {'target_table' : 'cmdb_config_item'})"
+    },
+    {
+        "$if": "'type_fields' in data.payload.model_properties",
+        "then": {
+            "$eval":"transform('cmdb_config_item_paragraph_fields',{'target_table':'cmdb_ci_paragraph_field'})"
+        }
+    }
+]

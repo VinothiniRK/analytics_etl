@@ -1,0 +1,81 @@
+{
+    "$flattenDeep": [
+        {
+            "$eval": "transform('cmdb_config_item', {'target_table' : 'cmdb_config_item', 'action':'update'})"
+        },
+        {
+            "$if": "'model_changes' in  data.payload.changes",
+            "then": {
+                "$if": "'tickets' in  data.payload.changes.model_changes",
+                "then": {
+                    "$if": "'added' in  data.payload.changes.model_changes.tickets",
+                    "then": {
+                        "$map": {
+                            "$eval": "data.payload.changes.model_changes.tickets.added"
+                        },
+                        "each(x)": {
+                            "$eval": "transform('ticket_cmdb_request_resync',{field_index:index,'target_table':'ticket_cmdb_request', 'action':'update'})"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$if": "'model_changes' in  data.payload.changes",
+            "then": {
+                "$if": "'problems' in  data.payload.changes.model_changes",
+                "then": {
+                    "$if": "'added' in  data.payload.changes.model_changes.problems",
+                    "then": {
+                        "$map": {
+                            "$eval": "data.payload.changes.model_changes.problems.added"
+                        },
+                        "each(x)": {
+                            "$eval": "transform('problem_cmdb_request_resync',{field_index:index,'target_table':'problem_cmdb_request', 'action':'update'})"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$if": "'model_changes' in  data.payload.changes",
+            "then": {
+                "$if": "'changes' in  data.payload.changes.model_changes",
+                "then": {
+                    "$if": "'added' in  data.payload.changes.model_changes.changes",
+                    "then": {
+                        "$map": {
+                            "$eval": "data.payload.changes.model_changes.changes.added"
+                        },
+                        "each(x)": {
+                            "$eval": "transform('change_cmdb_request_resync',{field_index:index,'target_table':'change_cmdb_request', 'action':'update'})"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$if": "'model_changes' in  data.payload.changes",
+            "then": {
+                "$if": "'releases' in  data.payload.changes.model_changes",
+                "then": {
+                    "$if": "'added' in  data.payload.changes.model_changes.releases",
+                    "then": {
+                        "$map": {
+                            "$eval": "data.payload.changes.model_changes.releases.added"
+                        },
+                        "each(x)": {
+                            "$eval": "transform('release_cmdb_request_resync',{field_index:index,'target_table':'release_cmdb_request', 'action':'update'})"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$if": "'type_fields' in data.payload.model_properties",
+            "then": {
+                "$eval":"transform('cmdb_config_item_paragraph_fields',{'target_table':'cmdb_ci_paragraph_field'})"
+            }
+        }
+    ] 
+}

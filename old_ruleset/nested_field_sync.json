@@ -1,0 +1,8 @@
+[
+    {
+          "$if": "data.payload.model == 'Cmdb::NestedField'",
+          "then": {
+            "$eval": "transform('ci_type_nested_field', {'target_table' : 'cmdb_custom_field','action':'update'})"
+          }
+    }
+]

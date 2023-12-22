@@ -1,0 +1,92 @@
+[
+  {
+
+      "$eval": "transform('cmdb_config_item', {'target_table' : 'cmdb_config_item'})"
+    
+  },
+  {
+    
+      "$if": "'model_changes' in  data.payload.changes",
+      "then": {
+        "$if": "'tickets' in  data.payload.changes.model_changes",
+        "then": {
+          "$if": "'added' in  data.payload.changes.model_changes.tickets",
+          "then": {
+            "$eval": "transform('ticket_cmdb_request', {'target_table' : 'ticket_cmdb_request'})"
+          },
+          "else": {
+            "$if": "'removed' in  data.payload.changes.model_changes.tickets",
+            "then": {
+              "$eval": "transform('ticket_cmdb_request_destroy', {'target_table' : 'ticket_cmdb_request','action':'destroy'})"
+            }
+          }
+        }
+      }
+    
+  },
+  {
+    
+      "$if": "'model_changes' in  data.payload.changes",
+      "then": {
+        "$if": "'changes' in  data.payload.changes.model_changes",
+        "then": {
+          "$if": "'added' in  data.payload.changes.model_changes.changes",
+          "then": {
+            "$eval": "transform('change_cmdb_request', {'target_table' : 'change_cmdb_request'})"
+          },
+          "else": {
+            "$if": "'removed' in  data.payload.changes.model_changes.changes",
+            "then": {
+              "$eval": "transform('change_cmdb_request_destroy', {'target_table' : 'change_cmdb_request','action':'destroy'})"
+            }
+          }
+        }
+      }
+    
+  },
+  {
+    
+      "$if": "'model_changes' in  data.payload.changes",
+      "then": {
+        "$if": "'problems' in  data.payload.changes.model_changes",
+        "then": {
+          "$if": "'added' in  data.payload.changes.model_changes.problems",
+          "then": {
+            "$eval": "transform('problem_cmdb_request', {'target_table' : 'problem_cmdb_request'})"
+          },
+          "else": {
+            "$if": "'removed' in  data.payload.changes.model_changes.problems",
+            "then": {
+              "$eval": "transform('problem_cmdb_request_destroy', {'target_table' : 'problem_cmdb_request','action':'destroy'})"
+            }
+          }
+        }
+      }
+    
+  },
+  {
+    
+      "$if": "'model_changes' in  data.payload.changes",
+      "then": {
+        "$if": "'releases' in  data.payload.changes.model_changes",
+        "then": {
+          "$if": "'added' in  data.payload.changes.model_changes.releases",
+          "then": {
+            "$eval": "transform('release_cmdb_request', {'target_table' : 'release_cmdb_request'})"
+          },
+          "else": {
+            "$if": "'removed' in  data.payload.changes.model_changes.releases",
+            "then": {
+              "$eval": "transform('release_cmdb_request_destroy', {'target_table' : 'release_cmdb_request','action':'destroy'})"
+            }
+          }
+        }
+      }
+  },
+  {
+      "$if": "'type_fields' in data.payload.model_properties",
+        "then": {
+            "$eval":"transform('cmdb_config_item_paragraph_fields',{'target_table':'cmdb_ci_paragraph_field'})"
+        }
+  }
+]
