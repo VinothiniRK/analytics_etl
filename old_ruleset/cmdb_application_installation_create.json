@@ -1,0 +1,5 @@
+[
+  {
+        "$eval": "transform('software_installation', {'target_table' : 'software_installation'})"
+  }
+]

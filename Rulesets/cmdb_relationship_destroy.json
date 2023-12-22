@@ -1,0 +1,21 @@
+{
+    "$flattenDeep": {
+        "$let": {
+            "asset_activity_actions_info_by_name": {
+                "$eval": "udfs.asset_activity_action_info(false, true)"
+            }
+        },
+        "in": [
+            {
+                "$map": 
+                {
+                    "$eval": "udfs.asset_activities_relationship_parser_v2(data.payload, asset_activity_actions_info_by_name)"
+                },
+                "each(activity)": 
+                {
+                    "$eval": "transform('asset_activity', {'activity': activity, 'target_table': 'asset_activity'})"
+                }
+            }
+        ]
+    }
+}

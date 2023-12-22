@@ -1,0 +1,5 @@
+[
+  {
+        "$eval": "transform('software_installation_destroy', {'target_table' : 'software_installation'})"
+  }
+]
