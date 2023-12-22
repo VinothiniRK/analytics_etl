@@ -1,0 +1,65 @@
+{
+    "$let": {
+        "model_properties": {
+            "$eval": "data.payload.model_properties"
+        },
+        "column_lookup": {
+            "$eval": "udfs.activity_asset_field_column_by_type_v2()"
+        }
+    },
+    "in": {
+        "account_id": {
+            "$eval": "required_value(data.account_id)"
+        },
+        "action_id": {
+            "$if": "'action_id' in transform_attributes",
+            "then": {
+                "$eval": "transform_attributes.action_id"
+            },
+            "else":  "${model_properties.id}"
+        },
+        "field_type": {
+            "$if": "'field_type' in transform_attributes",
+            "then": {
+                "$eval": "transform_attributes.field_type"
+            },
+            "else": "${data.payload.model}"
+        },
+        "column_name": {
+            "$if": "'column_name' in transform_attributes",
+            "then": {
+                "$eval": "transform_attributes.column_name"
+            },
+            "else": {
+                "$if": "'column_prefix' in transform_attributes && 'col_type' in transform_attributes",
+                "then": "${transform_attributes.column_prefix}_${column_lookup[transform_attributes.col_type]}",
+                "else": {
+                    "$if": "'field_type' in model_properties && model_properties.field_type in ['default_vendor', 'default_product', 'default_domain', 'default_asset_state']",
+                    "then": "${transform_attributes.column_prefix}_string_value",
+                    "else": {
+                        "$if": "model_properties.col_type in column_lookup",
+                        "then": "${transform_attributes.column_prefix}_${column_lookup[model_properties.col_type]}"
+                    }
+                }
+            }
+        },
+        "label": {
+            "$if": "'column_prefix' in transform_attributes && 'label' in transform_attributes",
+            "then": "${transform_attributes.column_prefix} ${udfs.unescape_html_string(transform_attributes.label)}",
+            "else": {
+                "$if": "'label' in transform_attributes",
+                "then": "${transform_attributes.label}",
+                "else": {
+                    "$if": "'column_prefix' in transform_attributes",
+                    "then": "${transform_attributes.column_prefix} ${udfs.unescape_html_string(model_properties.label)}"
+                }
+            }
+        },
+        "created_at": {
+            "$eval": "udfs.to_utc(model_properties.created_at)"
+        },
+        "updated_at": {
+            "$eval": "udfs.to_utc(model_properties.updated_at)"
+        }
+    }
+}

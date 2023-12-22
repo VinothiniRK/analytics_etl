@@ -1,0 +1,48 @@
+{
+    "$flattenDeep": [
+        {
+            "$map": {
+                "$eval": "udfs.asset_activity_action_info(true,'meta' in data.payload.event_info && data.payload.event_info.meta == 'relationship_v1')"
+            },
+            "each(action_details)": [
+                {
+                    "$if": "data.payload.model_properties.name == 'CmdbFeature'",
+                    "then": [
+                        {
+                            "$eval": "transform('asset_activity_action', {action_id: action_details.action_id, action: action_details.action,field_type:action_details.field_type, 'target_table' : 'asset_activity_action'})"
+                        },
+                        {
+                            "$if": "data.payload.model_properties.name == 'CmdbFeature' && 'column_name' in action_details",
+                            "then": {
+                                "$eval": "transform('asset_activity_field', {action_id: action_details.action_id, action: action_details.action, column_name: action_details.column_name, label: action_details.label,field_type:action_details.field_type, 'target_table' : 'asset_activity_field'})"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "$map": {
+                "$eval": "udfs.asset_activity_default_fields(true)"
+            },
+            "each(action_details)": [
+                {
+                    "$if": "data.payload.model_properties.name == 'CmdbFeature'",
+                    "then": [
+                        {
+                        "$eval": "transform('asset_activity_action', {action_id: action_details.action_id, label: action_details.action, field_type: action_details.field_type, 'target_table' : 'asset_activity_action'})"
+                    }, {
+                    "$if": "action_details.action != 'Description'",
+                    "then": [
+                    {
+                        "$eval": "transform('asset_activity_field', {action_id: action_details.action_id, field_type: action_details.field_type, col_type: action_details.col_type, label: action_details.action, column_prefix: 'from', target_table : 'asset_activity_field'})"
+                    },
+                    {
+                        "$eval": "transform('asset_activity_field', {action_id: action_details.action_id, field_type:action_details.field_type, col_type:action_details.col_type, label: action_details.action, column_prefix: 'to', target_table : 'asset_activity_field'})"
+                    }
+                ]}]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+[
+  {
+      "$eval": "transform('cmdb_config_item_destroy', {'target_table' : 'cmdb_config_item'})"
+  },
+  {
+      "$eval": "transform('cmdb_config_item_destroy', {'target_table' : 'cmdb_ci_paragraph_field'})"
+  },
+  {
+      "$eval": "transform('asset_activity_delete', {'action':'create', 'target_table' : 'custom_stale_object'})"
+  }
+]

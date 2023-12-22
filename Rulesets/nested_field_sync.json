@@ -1,0 +1,17 @@
+{
+    "$if": "data.payload.model == 'Cmdb::NestedField'",
+    "then":  [
+        {
+            "$eval": "transform('ci_type_nested_field', {'target_table' : 'cmdb_custom_field'})"
+        },
+        {
+            "$eval": "transform('asset_activity_action', {'target_table' : 'asset_activity_action'})"
+        },
+        {
+            "$eval": "transform('asset_activity_field', {column_prefix: 'from', column_name: 'from_string_value', 'target_table': 'asset_activity_field'})"
+        },
+        {
+            "$eval": "transform('asset_activity_field', {column_prefix: 'to', column_name: 'to_string_value',  'target_table': 'asset_activity_field'})"
+        }
+    ]
+}

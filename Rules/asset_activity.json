@@ -1,0 +1,96 @@
+{
+    "$let":{
+        "model_properties":{
+            "$eval": "data.payload.model_properties"
+        },
+        "activity":{
+            "$eval": "transform_attributes.activity"
+        }
+    },
+    "in":{
+        "account_id":{
+            "$eval": "required_value(data.account_id)"
+        },
+        "workspace_id":{
+            "$if": "'workspace_id' in activity",
+            "then": {
+                "$eval": "activity.workspace_id"
+            }, 
+            "else" : {
+                "$if": "'workspace_id' in model_properties",
+                "then": {
+                    "$eval": "model_properties.workspace_id"
+                },
+                "else" : {
+                    "$eval": "2"
+                }
+            }
+        },
+        "asset_id":{
+            "$if": "'asset_id' in activity && activity['asset_id'] != null",
+            "then": {
+                "$eval": "activity.asset_id"
+            },
+            "else": {
+                "$eval": "required_value(model_properties.id)"
+            }
+        },
+        "action_id":{
+            "$eval": "required_value(activity.action_id)"
+        },
+        "field_type":{
+            "$eval": "required_value(activity.field_type)"
+        },
+        "actor_id":{
+            "$if": "'actor_id' in activity && activity['actor_id'] != null",
+            "then": {
+                "$eval": "activity.actor_id"   
+            }
+        },
+        "system_user_name":{
+            "$if": "'system_user_name' in activity && activity['system_user_name'] != null",
+            "then": {
+                "$eval": "activity.system_user_name"     
+            }
+        },
+        "system_user_type":{
+            "$if": "'system_user_type' in activity && activity['system_user_type'] != null",
+            "then": {
+                "$eval": "activity.system_user_type"     
+            }
+        },
+        "executed_at":{
+            "$eval": "udfs.to_utc(data.payload.event_timestamp)"
+        },
+        "${activity['from_column_name']}": {
+            "$if": "'from_column_name' in activity && 'from_value' in activity",
+            "then":{
+                "$eval": "activity.from_value"
+            }
+        },
+        "${activity['to_column_name']}": {
+            "$if": "'to_column_name' in activity && 'to_value' in activity",
+            "then":{
+                "$eval": "activity.to_value"
+            }
+        },
+        "from_value": {
+            "$if": "activity['from_column_name']",
+            "then": {
+                "$eval": "activity.from_value_string"
+            }
+        },
+        "to_value": {
+            "$if": "'to_value_string' in activity",
+            "then": {
+                "$eval": "activity.to_value_string"
+            }
+        },
+        "created_at": {
+            "$eval": "model_properties.created_at"
+        },
+        "updated_at": {
+            "$eval": "model_properties.updated_at"
+        }
+    }
+}

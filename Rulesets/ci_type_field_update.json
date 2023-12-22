@@ -1,0 +1,37 @@
+{
+  "$flattenDeep": {
+    "$let": {
+      "model_properties": {
+        "$eval": "data.payload.model_properties"
+      }
+    },
+    "in": 
+    [
+      {
+        "$if": "model_properties.field_type in ['default_health'] ",
+        "else": {
+            "$eval": "transform('ci_type_field', {'target_table' : 'cmdb_custom_field'})"
+        }
+      },
+      {
+        "$if": "data.payload.model == 'Cmdb::CiTypeField' && model_properties.ci_type_id > 0",
+        "then": [
+          {
+            "$eval": "transform('asset_activity_action', {'target_table' : 'asset_activity_action'})"
+          },
+          {
+            "$if": "model_properties.field_type != 'custom_paragraph' && model_properties.ci_type_id > 0",
+            "then": [
+              {
+                "$eval": "transform('asset_activity_field', {column_prefix: 'from', 'target_table': 'asset_activity_field'})"
+              },
+              {
+                "$eval": "transform('asset_activity_field', {column_prefix: 'to', 'target_table': 'asset_activity_field'})"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
